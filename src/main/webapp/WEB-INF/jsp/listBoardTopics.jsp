@@ -24,6 +24,7 @@
                 <%
                     User user = (User) session.getAttribute("USER_CONTEXT");
                     if (user == null) {
+                        
                         response.sendRedirect("/forum/login.jsp");
                     } else {
                         Board board = (Board) request.getAttribute("board");
