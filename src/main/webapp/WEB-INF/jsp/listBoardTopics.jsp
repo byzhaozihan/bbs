@@ -23,13 +23,18 @@
 
                 <%
                     User user = (User) session.getAttribute("USER_CONTEXT");
-                    Board board = (Board) request.getAttribute("board");
-                    Iterator<Board> boardIterator = user.getManBoards().iterator();
-                    while (boardIterator.hasNext()) {
-                        if (board.getBoardId() == boardIterator.next().getBoardId()) {
-                            request.setAttribute("isboardManager", true);
+                    if (user == null) {
+                        response.sendRedirect("/forum/login.jsp");
+                    } else {
+                        Board board = (Board) request.getAttribute("board");
+                        Iterator<Board> boardIterator = user.getManBoards().iterator();
+                        while (boardIterator.hasNext()) {
+                            if (board.getBoardId() == boardIterator.next().getBoardId()) {
+                                request.setAttribute("isboardManager", true);
+                            }
                         }
                     }
+
 
                     /**
                      *  之前用这个版块管理员不起作用，怀疑Set集合跟forEach有冲突
