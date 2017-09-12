@@ -84,9 +84,11 @@ public class BoardManagerController extends BaseController{
     public ModelAndView listTopicPosts(@PathVariable Integer topicId, @RequestParam(value = "pageNo", required = false) Integer pageNo) {
         ModelAndView view = new ModelAndView();
         Topic topic = forumService.getTopicByTopicId(topicId);
+        Board board = forumService.getBoardById(topic.getBoardId());//删除回复帖子需要确认板块管理员
         pageNo = pageNo == null ? 1 : pageNo;
         Page pagedPost = forumService.getPagedPosts(topicId, pageNo, CommonConstant.PAGE_SIZE);
         //为回复帖子的表单准备数据
+        view.addObject("board", board);
         view.addObject("topic", topic);
         view.addObject("pagedPost", pagedPost);
         view.setViewName("/listTopicPosts");
@@ -135,6 +137,19 @@ public class BoardManagerController extends BaseController{
         }
         String targetUrl = "/board/listBoardTopics-" + boardId + ".html";
         return "redirect:"+targetUrl;
+    }
+
+    /**
+     * 删除回复帖子
+     */
+    @RequestMapping(value = "/board/removePost",method = RequestMethod.GET)
+    public String removePost(@RequestParam("postIds") String postIds, @RequestParam("topicId") String topicId) {
+        String[] arrIds = postIds.split(",");
+        for (int i=0;i<arrIds.length;i++) {
+            forumService.removePost(new Integer(arrIds[i]));
+        }
+        String targetUrl = "/board/listTopicPosts-" + topicId + ".html";
+        return "redirect:" + targetUrl;
     }
 
     /**

@@ -1,3 +1,6 @@
+<%@ page import="com.zzh.domain.User" %>
+<%@ page import="com.zzh.domain.Board" %>
+<%@ page import="java.util.Iterator" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -16,8 +19,22 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <table class="table table-hover">
+                <c:set var="isboardManager" value="${false}" scope="request"/>
+                <%
+                    User user = (User) session.getAttribute("USER_CONTEXT");
+                    Board board = (Board) request.getAttribute("board");
+                    Iterator<Board> boardIterator = user.getManBoards().iterator();
+                    while (boardIterator.hasNext()) {
+                        if (board.getBoardId() == boardIterator.next().getBoardId()) {
+                            request.setAttribute("isboardManager", true);
+                        }
+                    }
+                %>
                 <c:forEach var="post" items="${pagedPost.result}">
                     <tr>
+                        <c:if test="${USER_CONTEXT.userType == 2 || isboardManager}">
+                            <td><input type="checkbox" name="postIds" value="${post.postId}"/></td>
+                        </c:if>
                         <th colspan="2">${post.postTitle}</th>
                     </tr>
                     <tr>
@@ -55,6 +72,36 @@
                     }
                 }
             </script>
+            <c:if test="${USER_CONTEXT.userType == 2 || isboardManager}">
+                <script>
+                    function getSelectedPostIds() {
+                        var selectBoxs = document.all("postIds");
+                        if (!selectBoxs) return null;
+                        if (typeof(selectBoxs.length) == "undefined" && selectBoxs.checked) {
+                            return selectBoxs.value;
+                        } else {//many checkbox ,so is a array
+                            var ids = "";
+                            var split = "";
+                            for (var i = 0; i < selectBoxs.length; i++) {
+                                if (selectBoxs[i].checked) {
+                                    ids += split + selectBoxs[i].value;
+                                    split = ",";
+                                }
+                            }
+                            return ids;
+                        }
+                    }
+                    function deletePosts() {
+                        var ids = getSelectedPostIds();
+                        if (ids) {
+                            var url = "<c:url value="/board/removePost.html"/>?postIds=" + ids + "&topicId=${topic.topicId}";
+                            //alert(url);
+                            location.href = url;
+                        }
+                    }
+                </script>
+                <input type="button" value="删除" class="btn btn-danger" onclick="deletePosts()">
+            </c:if>
             <form action="<c:url value="/board/addPost.html"/> " method="post" onsubmit="return mySubmic()">
                 <h3 align="center">回复</h3>
                 <hr>

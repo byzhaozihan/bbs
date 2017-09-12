@@ -24,7 +24,7 @@
                 <%
                     User user = (User) session.getAttribute("USER_CONTEXT");
                     if (user == null) {
-                        
+
                         response.sendRedirect("/forum/login.jsp");
                     } else {
                         Board board = (Board) request.getAttribute("board");
@@ -60,22 +60,7 @@
                 <tbody>
                 <tr>
                     <c:if test="${USER_CONTEXT.userType == 2 || isboardManager}">
-                        <td>
-                            <script>
-                                function switchSelectBox() {
-                                    var selectBoxs = document.all("topicIds");
-                                    if (!selectBoxs) return;
-                                    if (typeof(selectBoxs.length) == "undefined") {//only one checkbox
-                                        selectBoxs.checked = event.srcElement.checked;
-                                    } else {//many checkbox ,so is a array
-                                        for (var i = 0; i < selectBoxs.length; i++) {
-                                            selectBoxs[i].checked = event.srcElement.checked;
-                                        }
-                                    }
-                                }
-                            </script>
-                            <input type="checkbox" onclick="switchSelectBox()"/>
-                        </td>
+                        <td></td>
                     </c:if>
                     <td width="50%">
                         标题
